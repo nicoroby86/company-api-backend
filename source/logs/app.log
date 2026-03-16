@@ -1,0 +1,23 @@
+2026-02-04 11:47:28,052 | INFO | app.services.employees_service | employees_list called
+2026-02-04 11:48:05,292 | INFO | app.services.employees_service | employee_get called | employee_id:999
+2026-02-04 11:49:11,846 | INFO | app.services.employees_service | employee_create called | email:pedro@example.com
+2026-02-04 12:07:52,849 | INFO | app.services.employees_service | employee_create called | email:pedro@example.com
+2026-02-04 12:08:49,728 | INFO | app.services.employees_service | employees_list called
+2026-02-04 12:09:01,055 | INFO | app.services.employees_service | employee_create called | email:carlos@example.com
+2026-02-04 12:10:27,908 | INFO | app.services.employees_service | employee_create called | email:pedro2@example.com
+2026-02-04 12:19:47,631 | INFO | app.services.employees_service | employee_create called | email:pedro2@example.com
+2026-02-04 12:20:56,614 | INFO | app.services.employees_service | employee_create called | email:cristian@example.com
+2026-02-04 12:23:59,036 | INFO | app.services.employees_service | employees_list called
+2026-02-04 12:25:02,372 | INFO | app.services.employees_service | employee_create called | email:claudio@example.com
+2026-02-04 14:20:55,181 | INFO | app.services.tasks_service | tasks_list_by_employee_and_status called | employee_id:1 | status:pending
+2026-02-04 14:35:13,347 | INFO | app.services.tasks_service | tasks_list_by_employee_and_status called | employee_id:1 | status:pending
+2026-02-28 19:30:17,140 | INFO | app.services.employees_service | employees_list called
+2026-02-28 20:12:57,913 | INFO | app.services.tasks_service | tasks_list_by_employee_and_status called | employee_id:1 | status:pending
+2026-03-09 09:20:15,193 | INFO | app.services.employees_service | employee_get called | employee_id:3
+2026-03-16 12:20:27,251 | INFO | app.services.employees_service | employees_list called
+2026-03-16 12:20:51,660 | INFO | app.services.employees_service | employee_get called | employee_id:3
+2026-03-16 12:21:27,864 | INFO | app.services.tasks_service | tasks_list_by_employee_and_status called | employee_id:3 | status:pending
+2026-03-16 12:21:42,354 | INFO | app.services.tasks_service | tasks_list_by_employee_and_status called | employee_id:2 | status:pending
+2026-03-16 12:21:58,436 | INFO | app.services.employees_service | employee_get called | employee_id:57
+2026-03-16 12:22:20,495 | INFO | app.services.employees_service | employee_create called | email:user@example.com
+2026-03-16 12:23:33,567 | INFO | app.services.employees_service | employees_list called
