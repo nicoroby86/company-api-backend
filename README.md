@@ -3,7 +3,13 @@
 
 A small but production-style REST API built with **FastAPI + SQLite**, following a clean architecture (**routers / services / core**), typed contracts using **Pydantic**, and consistent logging.
 
-This project is part of my backend portfolio and focuses on correctness, clarity, and real-world structure.
+This project is part of my backend portfolio and reflects my approach to building structured, maintainable backend systems.
+
+## Overview
+
+Production-style REST API built with FastAPI and SQLite.
+
+This project demonstrates how to design and structure a backend service using clean architecture, data validation, and proper separation of concerns.
 
 ---
 
@@ -30,6 +36,34 @@ This project is part of my backend portfolio and focuses on correctness, clarity
 - **Input validation**
   - Email validation via `EmailStr`
   - Task status validation via Enum (`TaskStatus`)
+
+---
+
+## 📸 Example Response
+
+GET /employees → 200 OK
+
+![Employees Endpoint](assets/get_employees.png)
+
+---
+
+## 📘 API Documentation
+
+Explore the API via Swagger after running locally:
+
+http://127.0.0.1:8000/docs
+
+---
+
+## What this project demonstrates
+
+- Designing REST APIs with FastAPI
+- Structuring a backend using layered architecture (routers / services / core)
+- Validating input and output using Pydantic
+- Handling errors and returning consistent responses
+- Working with SQLite and enforcing data constraints
+- Converting database rows into API-friendly JSON responses
+- Logging application behavior for debugging and traceability
 
 ---
 
