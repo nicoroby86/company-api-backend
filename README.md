@@ -36,10 +36,11 @@ This project demonstrates how to design and structure a backend service using cl
 - **Input validation**
   - Email validation via `EmailStr`
   - Task status validation via Enum (`TaskStatus`)
+- **Manual + automated testing (Swagger, curl, Postman, pytest)**
 
 ---
 
-## 📸 Example Response
+## Example Response
 
 GET /employees → 200 OK
 
@@ -47,7 +48,7 @@ GET /employees → 200 OK
 
 ---
 
-## 📘 API Documentation
+## API Documentation
 
 Explore the API via Swagger after running locally:
 
@@ -255,6 +256,7 @@ Logs are printed to the console and also written to:
 
 ## How to test quickly
 
+You can test this API using multiple approaches depending on your workflow.
 
 ### Swagger (UI)
 
@@ -262,11 +264,17 @@ Run the API and open:
 
 http://127.0.0.1:8000/docs
 
-From there you can test all endpoints interactively.
+Use Swagger to:
+- Explore endpoints
+- Send requests interactively
+- Validate request/response structure
+- Quickly test happy paths
 
+---
 
-### Using curl (terminal)
+### curl (Terminal)
 
+Useful for testing raw HTTP behavior and debugging.
 
 #### Create an employee
 
@@ -307,6 +315,93 @@ Invalid email format → 422 Unprocessable Entity
 Non-existing employee → 404 Not Found
 
 No tasks found → 200 OK with empty list
+
+---
+
+## Testing
+
+This API was thoroughly tested using a combination of manual and automated approaches to ensure correctness, stability, and contract consistency.
+
+### Testing Strategies
+
+#### 1. Swagger (Interactive Testing)
+
+- Used for quick validation of endpoints
+- Verified request/response flow
+- Checked status codes and response structure
+
+#### 2. curl (Terminal Testing)
+
+- Verified raw HTTP behavior
+- Inspected headers, status codes, and JSON responses
+- Ensured consistency with Swagger results
+- Tested edge cases (invalid input, duplicates, missing data)
+
+#### 3. Postman
+
+- Used for structured manual testing with saved collections
+- Reproduced real request scenarios
+- Validated:
+  - Happy paths
+  - Error handling (400, 404, 422)
+  - Input validation and response consistency
+
+#### Postman Collection
+
+A ready-to-use Postman collection is included:
+
+- `postman/company-api-v1.postman_collection.json`
+
+Import it into Postman to reproduce the requests and test scenarios used during development.
+
+#### 4. Pytest (Automated Testing)
+
+- Implemented automated tests using FastAPI `TestClient`
+- Covered:
+  - Successful requests (200, 201)
+  - Business rule validation (400)
+  - Input validation (422)
+  - Not found cases (404)
+- Ensured endpoint contracts and behavior remain stable over time
+
+### Coverage Highlights
+
+- Contract validation (response_model enforcement)
+- Input validation (Pydantic schemas)
+- Error handling consistency
+- Collection vs single resource behavior
+- Empty dataset handling
+- Repeated request stability
+- Filtering logic (GET /tasks)
+
+### Testing Documentation
+
+Detailed testing scenarios, including expected vs observed behavior, are documented in:
+
+- `testing.md`
+
+This includes:
+- Manual testing (Swagger, curl, Postman)
+- Automated testing (pytest)
+- Edge cases and validation scenarios
+
+#### Run tests from project root:
+
+```bash
+python -m pytest -v
+```
+
+- Uses FastAPI `TestClient`
+- Runs tests without needing the server running
+- Ensures endpoint behavior and contracts remain stable
+
+#### Expected Behavior
+- Duplicate email → 400 Bad Request
+- Invalid input → 422 Unprocessable Entity
+- Non-existing resource → 404 Not Found
+- Empty collections → 200 OK with []
+
+These tests ensure the API behaves consistently across manual and automated validation layers.
 
 ---
 

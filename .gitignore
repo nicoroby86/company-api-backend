@@ -47,3 +47,10 @@ htmlcov/
 # -----------------------------
 *.tmp
 *.bak
+
+# local testing / debug scripts
+source/check_db.py
+source/reset_test_db.py
+
+# local request files
+source/employee.json
