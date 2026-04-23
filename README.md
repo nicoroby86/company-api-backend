@@ -76,13 +76,25 @@ company-api-v1/
 ├── requirements.txt
 ├── .gitignore
 ├── init_db.py
+├── testing.md
+├── assets/
+│   └── get_employees.png
+├── postman/
+│   └── company-api-v1.postman_collection.json
 ├── database/               # created/used at runtime (DB file is ignored by git)
 └── source/
     ├── main.py             # DB functions (learning + utilities)
     ├── db_connection.py    # SQLite connection helper
     ├── schemas.py          # Pydantic schemas
     ├── api_legacy.py       # initial monolithic version (historical)
+    ├── seed_tasks.py       # seed data for tasks (testing support)
+    ├── seed_test_employees.py  # seed data for employees (testing support)
     ├── logs/               # log file generated at runtime (ignored by git)
+    ├── tests/              # automated tests (pytest)
+    │   ├── test_get_employee_by_id.py
+    │   ├── test_get_employees.py
+    │   ├── test_get_tasks.py
+    │   └── test_post_employees.py
     └── app/
         ├── api.py          # FastAPI app entrypoint
         ├── core/
@@ -95,7 +107,9 @@ company-api-v1/
             ├── employees_service.py
             └── tasks_service.py
 ```
-> Note: `database/company.db` and `logs/app.log` are generated locally and ignored by git.
+> Note:
+- `database/company.db` and `logs/app.log` are generated locally and ignored by git.
+- Local debug/testing scripts (e.g., check_db.py, reset_test_db.py, employee.json) are intentionally excluded via .gitignore.
 
 
 ## Requirements
