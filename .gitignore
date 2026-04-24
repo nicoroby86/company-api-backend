@@ -54,3 +54,7 @@ source/reset_test_db.py
 
 # local request files
 source/employee.json
+
+# local environment variables (DO NOT COMMIT)
+# contains database credentials and sensitive configuration
+.env
