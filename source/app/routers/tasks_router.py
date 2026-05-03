@@ -10,6 +10,7 @@ router = APIRouter(
     tags=['tasks'],
 )
 
+
 @router.get("", response_model=list[TaskOut])
 def get_tasks(employee_id: int, status: TaskStatus):
     return tasks_list_by_employee_and_status(employee_id, status.value)

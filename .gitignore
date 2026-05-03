@@ -51,6 +51,8 @@ htmlcov/
 # local testing / debug scripts
 source/check_db.py
 source/reset_test_db.py
+source/scripts/test_current_db.py
+source/scripts/test_env_db.py
 
 # local request files
 source/employee.json
@@ -58,3 +60,9 @@ source/employee.json
 # local environment variables (DO NOT COMMIT)
 # contains database credentials and sensitive configuration
 .env
+
+# local practice
+z_practice/
+
+# local SQL scratch / notes
+create_tables.md

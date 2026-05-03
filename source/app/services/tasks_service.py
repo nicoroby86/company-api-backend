@@ -3,7 +3,8 @@
 import logging
 from typing import Any
 
-from main import list_tasks_by_employee_and_status
+from app.dal.tasks_dal import list_tasks_by_employee_and_status
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,4 +17,4 @@ def tasks_list_by_employee_and_status(employee_id: int, status: str) -> list[dic
     )
     
     rows = list_tasks_by_employee_and_status(employee_id, status)
-    return [dict(r) for r in rows]
+    return rows

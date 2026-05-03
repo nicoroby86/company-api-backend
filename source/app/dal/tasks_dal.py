@@ -33,3 +33,29 @@ def create_task(description: str, status: str = "pending"):
         return new_task
     finally:
         conn.close()
+
+
+def list_tasks_by_employee_and_status(employee_id: int, status: str):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            '''
+            SELECT
+                task_id,
+                description,
+                status,
+                priority,
+                score,
+                employee_id,
+                created_at
+            FROM tasks
+            WHERE employee_id = %s
+                AND status = %s
+            ORDER BY task_id;
+            ''', (employee_id, status)
+        )
+        rows = cur.fetchall()
+        return rows
+    finally:
+        conn.close()

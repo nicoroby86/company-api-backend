@@ -1,6 +1,7 @@
 
 
 from enum import Enum
+from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
 
@@ -13,17 +14,26 @@ class EmployeeOut(BaseModel):
     employee_id: int
     full_name: str
     email: EmailStr
-    created_at: str
-
-
-class TaskOut(BaseModel):
-    task_id: int
-    description: str
-    status: str
+    created_at: datetime
 
 
 class TaskStatus(str, Enum):
     pending = 'pending'
+    in_progress = 'in_progress'
+    completed = 'completed'
+    blocked = 'blocked'
+
+class TaskOut(BaseModel):
+    task_id: int
+    description: str
+    status: TaskStatus 
+    priority: str | None = None
+    score: float | None = None
+    employee_id: int | None = None
+    created_at: datetime
+
+
+
 
 
 
