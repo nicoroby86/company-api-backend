@@ -1,20 +1,47 @@
 
-# Company API (V1) — Employees & Tasks
+# Company API — PostgreSQL Refactor
 
-A small but production-style REST API built with **FastAPI + SQLite**, following a clean architecture (**routers / services / core**), typed contracts using **Pydantic**, and consistent logging.
+A backend REST API built with **FastAPI + PostgreSQL**, following a layered architecture with **routers / services / DAL / core**, typed contracts using **Pydantic**, and environment-based configuration.
 
-This project is part of my backend portfolio and reflects my approach to building structured, maintainable backend systems.
+This repository started as a **V1 built with SQLite** and is currently evolving into a more deployable **V2** using PostgreSQL as the active database layer.
 
-## Overview
+---
 
-Production-style REST API built with FastAPI and SQLite.
+## Current Status
 
-This project demonstrates how to design and structure a backend service using clean architecture, data validation, and proper separation of concerns.
+The PostgreSQL-based V2 flow currently includes:
+
+- `GET /employees`
+- `GET /employees/{employee_id}`
+- `POST /employees`
+- `GET /tasks?employee_id=...&status=...`
+- `GET /health`
+
+### Current application flow:
+
+```text
+router -> service -> DAL -> PostgreSQL
+```
+
+## Database
+
+- Active database: PostgreSQL
+- Environment-based configuration through .env
+- Health check verifies DB connectivity using SELECT 1
 
 ---
 
 ## Tech Stack
 
+### V2 (current)
+- FastAPI
+- PostgreSQL
+- Psycopg
+- Pydantic
+- Python-dotenv
+- Uvicorn
+
+### V1 (baseline)
 - FastAPI
 - SQLite
 - Pydantic
@@ -24,101 +51,128 @@ This project demonstrates how to design and structure a backend service using cl
 
 ## Features
 
-- **FastAPI** + interactive docs (Swagger/OpenAPI)
-- **SQLite** database with constraints (e.g., unique email)
-- **Pydantic models**
-  - Request model: `EmployeeCreate`
-  - Response models: `EmployeeOut`, `TaskOut`
-- **Service layer** that converts SQLite `Row` → JSON-serializable `dict`
-- **Logging**
-  - Console logs
-  - File logs (generated at runtime)
-- **Input validation**
-  - Email validation via `EmailStr`
-  - Task status validation via Enum (`TaskStatus`)
-- **Manual + automated testing (Swagger, curl, Postman, pytest)**
+### Current V2 features
+- **PostgreSQL** connection through environment variables
+- **Layered architecture**
+  - routers
+  - services
+  - DAL
+  - core
+- Employee endpoints migrated to PostgreSQL
+- Tasks endpoint migrated to PostgreSQL
+- Health check endpoint for DB connectivity
+- Typed request/response contracts with Pydantic
+- Logging setup for application flow
+- Local environment config through `.env`
+
+### V1 foundation preserved in the project history
+- **FastAPI + SQLite baseline**
+- Initial layered structure
+- Manual and automated testing
+- Postman collection
+- Validation with Pydantic
+- Logging and structured error handling
 
 ---
 
-## Example Response
+## Example Responses
 
-GET /employees → 200 OK
+GET /employees
+[
+  {
+    "employee_id": 1,
+    "full_name": "Ana Torres",
+    "email": "ana@example.com",
+    "created_at": "2026-05-01T17:43:13.571536"
+  }
+]
 
-![Employees Endpoint](assets/get_employees.png)
+POST /employees
+{
+  "employee_id": 1,
+  "full_name": "Ana Torres",
+  "email": "ana@example.com",
+  "created_at": "2026-05-01T17:43:13.571536"
+}
+
+GET /tasks?employee_id=1&status=pending
+[
+  {
+    "task_id": 1,
+    "description": "Prepare API deployment",
+    "status": "pending",
+    "priority": null,
+    "score": null,
+    "employee_id": 1,
+    "created_at": "2026-05-01T18:15:07.524885"
+  }
+]
+
+GET /health
+{
+  "status": "ok",
+  "database": "connected"
+}
 
 ---
 
 ## API Documentation
 
-Explore the API via Swagger after running locally:
+Run the project locally and explore the API through Swagger:
 
 http://127.0.0.1:8000/docs
-
----
-
-## What this project demonstrates
-
-- Designing REST APIs with FastAPI
-- Structuring a backend using layered architecture (routers / services / core)
-- Validating input and output using Pydantic
-- Handling errors and returning consistent responses
-- Working with SQLite and enforcing data constraints
-- Converting database rows into API-friendly JSON responses
-- Logging application behavior for debugging and traceability
 
 ---
 
 ## Project Structure
 
 ```text
-company-api-v1/
+company-api-fastapi-v1/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
-├── init_db.py
+├── .env.example
 ├── testing.md
 ├── assets/
-│   └── get_employees.png
+├── database/                      # runtime/local artifacts (SQLite legacy area)
 ├── postman/
 │   └── company-api-v1.postman_collection.json
-├── database/               # created/used at runtime (DB file is ignored by git)
 └── source/
-    ├── main.py             # DB functions (learning + utilities)
-    ├── db_connection.py    # SQLite connection helper
-    ├── schemas.py          # Pydantic schemas
-    ├── api_legacy.py       # initial monolithic version (historical)
-    ├── seed_tasks.py       # seed data for tasks (testing support)
-    ├── seed_test_employees.py  # seed data for employees (testing support)
-    ├── logs/               # log file generated at runtime (ignored by git)
-    ├── tests/              # automated tests (pytest)
-    │   ├── test_get_employee_by_id.py
-    │   ├── test_get_employees.py
-    │   ├── test_get_tasks.py
-    │   └── test_post_employees.py
-    └── app/
-        ├── api.py          # FastAPI app entrypoint
-        ├── core/
-        │   ├── db.py
-        │   └── logging_config.py
-        ├── routers/
-        │   ├── employees_router.py
-        │   └── tasks_router.py
-        └── services/
-            ├── employees_service.py
-            └── tasks_service.py
+    ├── api_legacy.py             # historical monolithic version
+    ├── main.py                   # legacy V1 helpers still present during refactor
+    ├── schemas.py                # Pydantic schemas
+    ├── logs/                     # runtime logs
+    ├── scripts/
+    │   └── test_connection.py    # PostgreSQL connection check
+    ├── tests/
+    ├── app/
+    │   ├── api.py                # FastAPI entrypoint
+    │   ├── core/
+    │   │   ├── config.py         # environment-based settings
+    │   │   ├── db.py             # PostgreSQL connection
+    │   │   └── logging_config.py
+    │   ├── dal/
+    │   │   ├── employees_dal.py
+    │   │   └── tasks_dal.py
+    │   ├── routers/
+    │   │   ├── employees_router.py
+    │   │   ├── tasks_router.py
+    │   │   └── health_router.py
+    │   └── services/
+    │       ├── employees_service.py
+    │       └── tasks_service.py
 ```
-> Note:
-- `database/company.db` and `logs/app.log` are generated locally and ignored by git.
-- Local debug/testing scripts (e.g., check_db.py, reset_test_db.py, employee.json) are intentionally excluded via .gitignore.
-
-
-## Requirements
-
-- Python **3.10+** (recommended: 3.11+)
 
 ---
 
-## Setup (Run Locally)
+## Requirements
+
+- Python 3.10+ recommended
+- PostgreSQL running locally
+
+---
+
+## Local Setup (V2)
 
 1) Create and activate a virtual environment
 
@@ -142,13 +196,22 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3) Initialize the database (creates tables + inserts demo employee)
+3) Create `.env`
 
-```bash
-python init_db.py
-```
+Use `.env.example` as reference:
 
-4) Run the API
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=company_db
+DB_USER=your_postgres_user
+DB_PASSWORD=your_postgres_password
+
+4) Create PostgreSQL tables
+
+At this stage of the refactor, tables are created directly in PostgreSQL during local setup.
+
+5) Run the API
 
 ```bash
 cd source
@@ -159,118 +222,116 @@ Open Swagger UI:
 
 http://127.0.0.1:8000/docs
 
-
----
-
-## Endpoints
-
-### GET /employees
-
-Returns the list of all employees.
-
-**Response**
-```json
-[
-  {
-    "employee_id": 1,
-    "full_name": "Pedro Ciruja",
-    "email": "pedro@example.com",
-    "created_at": "2026-02-03T18:42:11"
-  }
-]
-```
-
-### GET /employees/{employee_id}
-
-Returns a single employee by ID.
-
-**Response**
-```json
-{
-  "employee_id": 1,
-  "full_name": "Pedro Ciruja",
-  "email": "pedro@example.com",
-  "created_at": "2026-02-03T18:42:11"
-}
-```
-
-### POST /employees
-
-Creates a new employee.
-
-**Request body**
-```json
-{
-  "full_name": "Pedro Ciruja",
-  "email": "pedro@example.com"
-}
-```
-
-**Success response (201 Created)**
-```json
-{
-  "message": "employee created"
-}
-```
-
-### GET /tasks
-
-Returns tasks for a specific employee, filtered by status.
-
-**Query params**
-- `employee_id` (int, required)
-- `status` (enum, optional, default: `pending`)
-
-> In V1, only `status="pending"` is supported.
-
-**Response**
-```json
-[
-  {
-    "task_id": 1,
-    "description": "Update emails",
-    "status": "pending"
-  }
-]
-```
-
 ---
 
 ## Status Codes
 
-- `200 OK` — Successful request (GET endpoints)
-- `201 Created` — Employee created successfully (POST /employees)
-- `400 Bad Request` — Business rule violation (e.g., duplicate email)
-- `404 Not Found` — Employee not found (GET /employees/{employee_id})
-- `422 Unprocessable Entity` — Validation error (invalid request body or invalid query params, e.g. wrong email format)
-
-
+- `200 OK` — Successful request
+- `201 Created` — Resource created successfully
+- `400 Bad Request` — Business rule violation (e.g. duplicate email)
+- `404 Not Found` — Resource not found
+- `422 Unprocessable Entity` — Validation error
+- `503 Service Unavailable` — Database unavailable (/health)
 
 ## Logging
 
 This API uses Python's built-in `logging` module to track requests and service-layer actions.
 
-Logs are printed to the console and also written to:
+Logs are printed to the console and also written to runtime log files:
 
 - `logs/app.log`
 
 **Typical log line**
 
 ```text
-2026-02-04 12:23:59,031 | INFO | app.services.employees_service | employee_create called | email: pedro@example.com
+2026-05-01 13:16:17,674 | INFO | app.services.employees_service | employee_create called | email: ana@example.com
 ```
+
+---
+
+## Project Evolution
+
+### V1 — SQLite baseline
+
+V1 was the original version of the project and served as the foundation for the current refactor.
+
+It focused on:
+
+- FastAPI fundamentals
+- SQLite integration
+- routers / services / core structure
+- Pydantic validation
+- manual and automated testing
+- logging
+- API documentation
+- Postman collection support
+
+In V1:
+
+- the active database was SQLite
+- created_at was handled as a string
+- POST /employees returned a simple confirmation message
+- the architecture was simpler, but intentionally designed to make the V2 refactor possible
+
+### V2 — PostgreSQL refactor
+
+V2 is the active direction of the project.
+
+It introduces:
+
+- PostgreSQL as the active database
+- DAL-based access layer
+- environment-based configuration
+- /health endpoint for DB readiness
+- response contracts aligned with PostgreSQL types
+- better preparation for deployment
+
+This version reflects a more realistic backend workflow and is the base for the upcoming public deploy.
+
+---
+
+## Testing
+
+### V1 testing foundation
+
+A large portion of the original testing and validation work was done during V1 and remains valuable as part of the project evolution.
+
+#### The V1 testing process included:
+
+- Swagger
+- curl
+- Postman
+- pytest
+
+The repository includes:
+
+- testing.md
+- Postman collection
+- automated tests in source/tests/
+
+### V2 testing status
+
+The current V2 migration has been validated locally through:
+
+- endpoint-by-endpoint manual verification
+- PostgreSQL-backed responses
+- health check validation
+- curl and Swagger testing during migration
+
+As the refactor continues, testing documentation will be updated to reflect the V2 flow more completely.
 
 ## Notes
 
-- SQLite is used as the database for V1.
-- Timestamps are stored as text in SQLite (via `CURRENT_TIMESTAMP`), so `created_at` is returned as a string in V1.
-- The architecture is intentionally simple but scalable (routers/services/core), and ready for a V2 refactor (PostgreSQL + Alembic + Docker + tests).
+- This repository reflects an active refactor branch from SQLite to PostgreSQL.
+- Some legacy files are still present during the migration phase for historical and learning purposes.
+- The current main focus is the PostgreSQL-based V2 flow.
+- The next step is public deployment.
 
 ---
 
 ## How to test quickly
 
-You can test this API using multiple approaches depending on your workflow.
+You can validate the API quickly using Swagger or curl.
 
 ### Swagger (UI)
 
@@ -281,8 +342,8 @@ http://127.0.0.1:8000/docs
 Use Swagger to:
 - Explore endpoints
 - Send requests interactively
-- Validate request/response structure
-- Quickly test happy paths
+- Inspect request/response structure
+- Validate happy paths quickly
 
 ---
 
@@ -320,6 +381,12 @@ curl "http://127.0.0.1:8000/employees/1"
 curl "http://127.0.0.1:8000/tasks?employee_id=1&status=pending"
 ```
 
+#### Get health
+
+```bash
+curl "http://127.0.0.1:8000/health"
+```
+
 #### Expected behavior
 
 Duplicate email → 400 Bad Request
@@ -328,86 +395,68 @@ Invalid email format → 422 Unprocessable Entity
 
 Non-existing employee → 404 Not Found
 
-No tasks found → 200 OK with empty list
+No tasks found → 200 OK with []
 
 ---
 
 ## Testing
 
-This API was thoroughly tested using a combination of manual and automated approaches to ensure correctness, stability, and contract consistency.
+This project includes both the original V1 testing foundation and the ongoing validation of the PostgreSQL-based V2 refactor.
 
-### Testing Strategies
+### Testing approaches
 
-#### 1. Swagger (Interactive Testing)
+#### Swagger (Interactive Testing)
+- Quick endpoint validation
+- Request/response inspection
+- Status code and contract checks
 
-- Used for quick validation of endpoints
-- Verified request/response flow
-- Checked status codes and response structure
+#### curl (Terminal Testing)
+- Raw HTTP verification
+- Header, status code, and JSON response inspection
+- Useful for validation and debugging during migration
 
-#### 2. curl (Terminal Testing)
+#### Postman
+- Structured manual testing with saved requests
+- Reproducible request flows
+- Validation of happy paths and error cases
 
-- Verified raw HTTP behavior
-- Inspected headers, status codes, and JSON responses
-- Ensured consistency with Swagger results
-- Tested edge cases (invalid input, duplicates, missing data)
+#### Pytest
+- Automated endpoint testing
+- Contract and validation checks
+- Regression support as the project evolves
 
-#### 3. Postman
+### Quick test coverage
 
-- Used for structured manual testing with saved collections
-- Reproduced real request scenarios
-- Validated:
-  - Happy paths
-  - Error handling (400, 404, 422)
-  - Input validation and response consistency
+The project has been validated across these scenarios:
 
-#### Postman Collection
+- successful requests (`200`, `201`)
+- duplicate email handling (`400`)
+- validation errors (`422`)
+- missing resources (`404`)
+- empty collections (`200` with `[]`)
+- filtered task retrieval (`GET /tasks?employee_id=...&status=...`)
+- database connectivity (`GET /health`)
 
-A ready-to-use Postman collection is included:
+### Project testing assets
 
-- `postman/company-api-v1.postman_collection.json`
-
-Import it into Postman to reproduce the requests and test scenarios used during development.
-
-#### 4. Pytest (Automated Testing)
-
-- Implemented automated tests using FastAPI `TestClient`
-- Covered:
-  - Successful requests (200, 201)
-  - Business rule validation (400)
-  - Input validation (422)
-  - Not found cases (404)
-- Ensured endpoint contracts and behavior remain stable over time
-
-### Coverage Highlights
-
-- Contract validation (response_model enforcement)
-- Input validation (Pydantic schemas)
-- Error handling consistency
-- Collection vs single resource behavior
-- Empty dataset handling
-- Repeated request stability
-- Filtering logic (GET /tasks)
-
-### Testing Documentation
-
-Detailed testing scenarios, including expected vs observed behavior, are documented in:
+The repository includes:
 
 - `testing.md`
+- `postman/company-api-v1.postman_collection.json`
+- automated tests in `source/tests/`
 
-This includes:
-- Manual testing (Swagger, curl, Postman)
-- Automated testing (pytest)
-- Edge cases and validation scenarios
+### Run automated tests
 
-#### Run tests from project root:
+From project root:
 
 ```bash
 python -m pytest -v
 ```
-
 - Uses FastAPI `TestClient`
 - Runs tests without needing the server running
 - Ensures endpoint behavior and contracts remain stable
+
+---
 
 #### Expected Behavior
 - Duplicate email → 400 Bad Request
@@ -419,26 +468,27 @@ These tests ensure the API behaves consistently across manual and automated vali
 
 ---
 
-## Future Improvements (V2)
+## What this project demonstrates
+- API design with FastAPI
+- migration from SQLite to PostgreSQL
+- layered backend structure
+- DAL-based database access
+- response contract evolution
+- environment-based configuration
+- incremental refactoring inside a Git branch
+- realistic backend portfolio progression
 
-This V1 version was intentionally built using a simple architecture and SQLite to focus on core backend principles, API design, data integrity, and service separation.
+---
 
-The next iteration (V2) will evolve this project into a more production-ready backend by introducing:
+## Repository Status
 
-- Migration from SQLite → PostgreSQL  
-- Database versioning using Alembic  
-- Containerization with Docker  
-- Automated testing with pytest  
-- Environment configuration via `.env`  
-- Improved error handling and validation patterns  
-- Clear separation between development and production settings  
-- Structured logging improvements  
-- API documentation refinements  
+### Current direction of the project:
 
-The current structure (routers / services / core) was designed from the beginning to make this refactor natural and possible without rewriting the business logic.
+- V1: SQLite baseline
+- V2: PostgreSQL migration in progress
+- Next: first public deploy on Render
 
-V2 aims to transform this API from a learning project into a portfolio-grade backend service aligned with real-world backend practices.
-
+---
 
 ## Pre-release Checklist
 
@@ -446,7 +496,6 @@ Before publishing or cloning the project:
 
 1) `database/company.db` is NOT tracked  
 2) `logs/app.log` is NOT tracked  
-3) From project root: `python init_db.py` works  
-4) `cd source` + `uvicorn app.api:app --reload` works  
+3) `cd source` + `uvicorn app.api:app --reload` works  
 
 You can use `git status` to verify which files are staged before committing.
