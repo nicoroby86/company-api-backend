@@ -31,6 +31,21 @@ router -> service -> DAL -> PostgreSQL
 
 ---
 
+## Live Demo
+
+The PostgreSQL-based V2 API is publicly deployed on Render.
+
+- Health check: `https://company-api-web.onrender.com/health`
+- Swagger Docs: `https://company-api-web.onrender.com/docs`
+
+This deployment includes:
+- FastAPI Web Service on Render
+- PostgreSQL database on Render
+- public API documentation
+- remote database connectivity
+
+---
+
 ## Tech Stack
 
 ### V2 (current)
