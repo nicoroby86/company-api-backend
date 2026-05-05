@@ -290,45 +290,6 @@ This version reflects a more realistic backend workflow and is the base for the 
 
 ---
 
-## Testing
-
-### V1 testing foundation
-
-A large portion of the original testing and validation work was done during V1 and remains valuable as part of the project evolution.
-
-#### The V1 testing process included:
-
-- Swagger
-- curl
-- Postman
-- pytest
-
-The repository includes:
-
-- testing.md
-- Postman collection
-- automated tests in source/tests/
-
-### V2 testing status
-
-The current V2 migration has been validated locally through:
-
-- endpoint-by-endpoint manual verification
-- PostgreSQL-backed responses
-- health check validation
-- curl and Swagger testing during migration
-
-As the refactor continues, testing documentation will be updated to reflect the V2 flow more completely.
-
-## Notes
-
-- This repository reflects an active refactor branch from SQLite to PostgreSQL.
-- Some legacy files are still present during the migration phase for historical and learning purposes.
-- The current main focus is the PostgreSQL-based V2 flow.
-- The next step is public deployment.
-
----
-
 ## How to test quickly
 
 You can validate the API quickly using Swagger or curl.
@@ -337,7 +298,9 @@ You can validate the API quickly using Swagger or curl.
 
 Run the API and open:
 
+```text
 http://127.0.0.1:8000/docs
+```
 
 Use Swagger to:
 - Explore endpoints
@@ -345,57 +308,102 @@ Use Swagger to:
 - Inspect request/response structure
 - Validate happy paths quickly
 
----
-
-### curl (Terminal)
+### Terminal requests
 
 Useful for testing raw HTTP behavior and debugging.
 
 #### Create an employee
 
+**Windows PowerShell**
+
+```powershell
+$body = @{
+    full_name = "Esteban Martinez"
+    email = "esteban@example.com"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri "http://127.0.0.1:8000/employees" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body $body
+```
+
+**Linux / macOS / Git Bash**
+
 ```bash
 curl -X POST "http://127.0.0.1:8000/employees" \
 -H "Content-Type: application/json" \
 -d '{
-  "full_name": "Pedro Ciruja",
+  "full_name": "Pedro Alvarez",
   "email": "pedro@example.com"
 }'
 
 ```
 
+
 #### Get all employees
 
+**Windows PowerShell**
+
+```powershell
+curl.exe -i "http://127.0.0.1:8000/employees"
+```
+
+**Linux / macOS / Git Bash**
+
 ```bash
-curl "http://127.0.0.1:8000/employees"
+curl -i "http://127.0.0.1:8000/employees"
 ```
 
 #### Get employee by ID
 
+**Windows PowerShell**
+
+```powershell
+curl.exe -i "http://127.0.0.1:8000/employees/1"
+```
+
+**Linux / macOS / Git Bash**
+
 ```bash
-curl "http://127.0.0.1:8000/employees/1"
+curl -i "http://127.0.0.1:8000/employees/1"
 ```
 
 #### Get tasks by employee and status
 
+**Windows PowerShell**
+
+```powershell
+curl.exe -i "http://127.0.0.1:8000/tasks?employee_id=1&status=pending"
+```
+
+**Linux / macOS / Git Bash**
+
 ```bash
-curl "http://127.0.0.1:8000/tasks?employee_id=1&status=pending"
+curl -i "http://127.0.0.1:8000/tasks?employee_id=1&status=pending"
 ```
 
 #### Get health
 
+**Windows PowerShell**
+
+```powershell
+curl.exe -i "http://127.0.0.1:8000/health"
+```
+
+**Linux / macOS / Git Bash**
+
 ```bash
-curl "http://127.0.0.1:8000/health"
+curl -i "http://127.0.0.1:8000/health"
 ```
 
 #### Expected behavior
 
-Duplicate email → 400 Bad Request
-
-Invalid email format → 422 Unprocessable Entity
-
-Non-existing employee → 404 Not Found
-
-No tasks found → 200 OK with []
+- Duplicate email → `400 Bad Request`
+- Invalid email format → `422 Unprocessable Entity`
+- Non-existing employee → `404 Not Found`
+- No tasks found → `200 OK` with `[]`
 
 ---
 
@@ -457,12 +465,6 @@ python -m pytest -v
 - Ensures endpoint behavior and contracts remain stable
 
 ---
-
-#### Expected Behavior
-- Duplicate email → 400 Bad Request
-- Invalid input → 422 Unprocessable Entity
-- Non-existing resource → 404 Not Found
-- Empty collections → 200 OK with []
 
 These tests ensure the API behaves consistently across manual and automated validation layers.
 
