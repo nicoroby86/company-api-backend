@@ -11,10 +11,17 @@ This repository started as a **V1 built with SQLite** and is currently evolving 
 
 The PostgreSQL-based V2 flow currently includes:
 
+## Current Status
+
+The PostgreSQL-based V2 flow currently includes:
+
 - `GET /employees`
 - `GET /employees/{employee_id}`
 - `POST /employees`
 - `GET /tasks?employee_id=...&status=...`
+- `GET /tasks/{task_id}`
+- `POST /tasks`
+- `PATCH /tasks/{task_id}/status`
 - `GET /health`
 
 ### Current application flow:
@@ -128,14 +135,6 @@ GET /health
   "status": "ok",
   "database": "connected"
 }
-
----
-
-## API Documentation
-
-Run the project locally and explore the API through Swagger:
-
-http://127.0.0.1:8000/docs
 
 ---
 

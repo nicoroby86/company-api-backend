@@ -23,6 +23,16 @@ class TaskStatus(str, Enum):
     completed = 'completed'
     blocked = 'blocked'
 
+
+class TaskCreate(BaseModel):
+    description: str
+    status: TaskStatus = TaskStatus.pending
+    employee_id: int
+
+
+class TaskStatusUpdate(BaseModel):
+    status: TaskStatus
+
 class TaskOut(BaseModel):
     task_id: int
     description: str
