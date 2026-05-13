@@ -121,12 +121,98 @@ def update_task_status(task_id: int, new_status: str):
         conn.close()
 
 
+def update_task_description(task_id: int, new_description: str):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            '''
+            UPDATE tasks
+            SET description = %s
+            WHERE task_id = %s
+            RETURNING
+                task_id,
+                description,
+                status,
+                priority,
+                score,
+                employee_id,
+                created_at;
+            ''',
+            (new_description, task_id)
+        )
+        update_task = cur.fetchone()
+        conn.commit()
+        return update_task
+    finally:
+        conn.close()
 
 
 
 
+def get_tasks_stats():
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
 
+        cur.execute(
+            '''
+            SELECT COUNT(*) AS total_tasks
+            FROM tasks;
+            '''
+        )
+        total_row = cur.fetchone()
 
+        cur.execute(
+            '''
+            SELECT
+                COUNT(*) FILTER (WHERE status = 'pending') AS pending,
+                COUNT(*) FILTER (WHERE status = 'in_progress') AS in_progress,
+                COUNT(*) FILTER (WHERE status = 'completed') AS completed,
+                COUNT(*) FILTER (WHERE status = 'blocked') AS blocked
+            FROM tasks;
+            '''
+        )
+        status_row = cur.fetchone()
+
+        cur.execute(
+            '''
+            SELECT
+                COUNT(*) FILTER (WHERE priority = 'low') AS low,
+                COUNT(*) FILTER (WHERE priority = 'medium') AS medium,
+                COUNT(*) FILTER (WHERE priority = 'high') AS high
+            FROM tasks;
+            '''
+        )
+        priority_row = cur.fetchone()
+
+        cur.execute(
+            '''
+            SELECT
+                e.employee_id,
+                e.full_name,
+                COUNT(t.task_id) AS total_tasks,
+                COUNT(*) FILTER (WHERE t.status = 'pending') AS pending,
+                COUNT(*) FILTER (WHERE t.status = 'in_progress') AS in_progress,
+                COUNT(*) FILTER (WHERE t.status = 'completed') AS completed,
+                COUNT(*) FILTER (WHERE t.status = 'blocked') AS blocked
+            FROM employees e
+            LEFT JOIN tasks t
+                ON e.employee_id = t.employee_id
+            GROUP BY e.employee_id, e.full_name
+            ORDER BY total_tasks DESC, e.employee_id ASC;
+            '''
+        )
+        workload_rows = cur.fetchall()
+
+        return {
+            "total_tasks": total_row,
+            "by_status": status_row,
+            "by_priority": priority_row,
+            "workload_by_employee": workload_rows,
+        }
+    finally:
+        conn.close()
 
 
 

@@ -8,6 +8,8 @@ from app.dal.tasks_dal import (
     get_task_by_id,
     create_task,
     update_task_status,
+    update_task_description,
+    get_tasks_stats,
 )
 
 
@@ -55,3 +57,72 @@ def task_update_status(task_id: int, new_status: str):
     
     update_task = update_task_status(task_id, new_status)
     return update_task
+
+
+def task_update_description(task_id: int, new_description: str):
+    logger.info(
+        'task_update_description called | task_id:%s | new_description:%s',
+        task_id,
+        new_description,
+    )
+    
+    update_task = update_task_description(task_id, new_description)
+    return update_task
+
+
+def tasks_get_stats():
+    logger.info('tasks_get_stats called')
+
+    stats = get_tasks_stats()
+
+    total_tasks = stats["total_tasks"]["total_tasks"]
+
+    by_status = {
+        "pending": stats["by_status"]["pending"],
+        "in_progress": stats["by_status"]["in_progress"],
+        "completed": stats["by_status"]["completed"],
+        "blocked": stats["by_status"]["blocked"],
+    }
+
+    by_priority = {
+        "low": stats["by_priority"]["low"],
+        "medium": stats["by_priority"]["medium"],
+        "high": stats["by_priority"]["high"],
+    }
+
+    workload_by_employee = []
+
+    for row in stats["workload_by_employee"]:
+        workload_by_employee.append(
+            {
+                "employee_id": row["employee_id"],
+                "full_name": row["full_name"],
+                "total_tasks": row["total_tasks"],
+                "pending": row["pending"],
+                "in_progress": row["in_progress"],
+                "completed": row["completed"],
+                "blocked": row["blocked"],
+            }
+        )
+
+    return {
+        "total_tasks": total_tasks,
+        "by_status": by_status,
+        "by_priority": by_priority,
+        "workload_by_employee": workload_by_employee,
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

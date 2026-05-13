@@ -1,12 +1,22 @@
 
 
 from fastapi import APIRouter, HTTPException, status
-from schemas import TaskStatus, TaskCreate, TaskOut, TaskStatusUpdate
+from schemas import (
+    TaskStatus,
+    TaskCreate,
+    TaskOut,
+    TaskStatusUpdate,
+    TaskDescriptionUpdate,
+    TaskStatsOut,
+)
+
 from app.services.tasks_service import (
     tasks_list_by_employee_and_status,
     task_get_by_id,
     task_create,
     task_update_status,
+    task_update_description,
+    tasks_get_stats,
 )
 
 
@@ -19,6 +29,11 @@ router = APIRouter(
 @router.get("", response_model=list[TaskOut])
 def get_tasks(employee_id: int, status: TaskStatus):
     return tasks_list_by_employee_and_status(employee_id, status.value)
+
+
+@router.get("/stats", response_model=TaskStatsOut)
+def get_tasks_stats_route():
+    return tasks_get_stats()
 
 
 @router.get("/{task_id}", response_model=TaskOut)
@@ -53,4 +68,19 @@ def update_task_status_route(task_id: int, task_data: TaskStatusUpdate):
             detail='task not found',
         )
     return update_task
+
+
+@router.patch("/{task_id}/description", response_model=TaskOut)
+def update_task_description_route(task_id: int, task_data: TaskDescriptionUpdate):
+    update_task = task_update_description(task_id, task_data.description)
+    
+    if update_task is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='task not found',
+        )
+    return update_task
+
+
+
 

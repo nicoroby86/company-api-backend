@@ -57,7 +57,8 @@ source/scripts/test_env_db.py
 # local request files
 source/employee.json
 source/task.json
-source/patch.json
+source/patch_status.json
+source/patch_description.json
 
 # local environment variables (DO NOT COMMIT)
 # contains database credentials and sensitive configuration
@@ -68,3 +69,4 @@ z_practice/
 
 # local SQL scratch / notes
 create_tables.md
+production_smoke_test.md

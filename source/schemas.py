@@ -33,6 +33,11 @@ class TaskCreate(BaseModel):
 class TaskStatusUpdate(BaseModel):
     status: TaskStatus
 
+
+class TaskDescriptionUpdate(BaseModel):
+    description: str
+
+
 class TaskOut(BaseModel):
     task_id: int
     description: str
@@ -43,11 +48,32 @@ class TaskOut(BaseModel):
     created_at: datetime
 
 
+class TaskStatusStats(BaseModel):
+    pending: int
+    in_progress: int
+    completed: int
+    blocked: int
 
 
+class TaskPriorityStats(BaseModel):
+    low: int
+    medium: int
+    high: int
 
 
+class EmployeeWorkloadStats(BaseModel):
+    employee_id: int
+    full_name: str
+    total_tasks: int
+    pending: int
+    in_progress: int
+    completed: int
+    blocked: int
 
 
-
+class TaskStatsOut(BaseModel):
+    total_tasks: int
+    by_status: TaskStatusStats
+    by_priority: TaskPriorityStats
+    workload_by_employee: list[EmployeeWorkloadStats]
 
