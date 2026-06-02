@@ -10,6 +10,7 @@ from app.dal.tasks_dal import (
     update_task_status,
     update_task_description,
     get_tasks_stats,
+    update_task_analysis,
 )
 
 
@@ -115,11 +116,116 @@ def tasks_get_stats():
 
 
 
+def analyze_task_description(description: str, current_status: str):
+    description_lower = description.lower()
+    
+    score = 0.0
+    reasons = []
+    
+    high_priority_keywords = {
+        "urgent": 0.25,
+        "asap": 0.25,
+        "critical": 0.25,
+        "production": 0.20,
+        "bug": 0.20,
+        "error": 0.20,
+        "failed": 0.20,
+        "failure": 0.20,
+        "broken": 0.20,
+        "blocked": 0.20,
+        "fix": 0.10,
+    }
+    
+    medium_priority_keywords = {
+        "database": 0.15,
+        "postgresql": 0.15,
+        "connection": 0.15,
+        "deployment": 0.15,
+        "deploy": 0.15,
+        "api": 0.10,
+        "endpoint": 0.10,
+        "testing": 0.10,
+        "test": 0.10,
+        "validation": 0.10,
+        "review": 0.05,
+    }
+    
+    for keyword, weight in high_priority_keywords.items():
+        if keyword in description_lower:
+            score += weight
+            reasons.append(f'contains high-priority keyword: {keyword}')
+    
+    for keyword, weight in medium_priority_keywords.items():
+        if keyword in description_lower:
+            score += weight
+            reasons.append(f'contains technical keyword: {keyword}')
+    
+    if current_status == 'blocked':
+        score += 0.20
+        reasons.append('task is currently blocked')
+    
+    elif current_status == 'in_progress':
+        score += 0.05
+        reasons.append('task is currently in progress')
+    
+    if len(description) >= 80:
+        score += 0.10
+        reasons.append('long description with additional context')
+    
+    if len(description) < 25:
+        reasons.append('short description with limited context')
+    
+    if score > 1.0:
+        score = 1.0
+    
+    score = round(score, 2)
+    
+    if score >= 0.65:
+        priority = 'high'
+    elif score >= 0.30:
+        priority = 'medium'
+    else:
+        priority = 'low'
+    
+    if not reasons:
+        reasons.append('no relevant priority indicators detected')
+    
+    return score, priority, reasons
 
 
 
-
-
+def task_analyze(task_id: int):
+    logger.info(
+        'task_analyze called | task_id:%s',
+        task_id,
+    )
+    
+    task = get_task_by_id(task_id)
+    
+    if task is None:
+        return None
+    
+    description = task["description"]
+    current_status = task["status"]
+    
+    score, priority, reasons = analyze_task_description(
+        description=description,
+        current_status=current_status,
+    )
+    
+    update_task_analysis(
+        task_id=task_id,
+        score=score,
+        priority=priority,
+    )
+    
+    return {
+        "task_id": task_id,
+        "description": description,
+        "score": score,
+        "priority": priority,
+        "reasons": reasons,
+    }
 
 
 

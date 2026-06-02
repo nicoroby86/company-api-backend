@@ -218,7 +218,29 @@ def get_tasks_stats():
 
 
 
-
+def update_task_analysis(task_id: int, score: float, priority: str):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            '''
+            UPDATE tasks
+            SET
+                score = %s,
+                priority = %s
+            WHERE task_id = %s
+            RETURNING
+                task_id,
+                score,
+                priority;
+            ''',
+            (score, priority, task_id)
+        )
+        update_task = cur.fetchone()
+        conn.commit()
+        return update_task
+    finally:
+        conn.close()
 
 
 

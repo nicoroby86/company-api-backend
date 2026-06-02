@@ -24,6 +24,11 @@ class TaskStatus(str, Enum):
     blocked = 'blocked'
 
 
+class TaskPriority(str, Enum):
+    low = 'low'
+    medium = 'medium'
+    high = 'high'
+
 class TaskCreate(BaseModel):
     description: str
     status: TaskStatus = TaskStatus.pending
@@ -36,6 +41,13 @@ class TaskStatusUpdate(BaseModel):
 
 class TaskDescriptionUpdate(BaseModel):
     description: str
+
+class TaskAnalysisOut(BaseModel):
+    task_id: int
+    description: str
+    score: float
+    priority: TaskPriority
+    reasons: list[str]
 
 
 class TaskOut(BaseModel):

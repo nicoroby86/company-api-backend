@@ -8,6 +8,7 @@ from schemas import (
     TaskStatusUpdate,
     TaskDescriptionUpdate,
     TaskStatsOut,
+    TaskAnalysisOut,
 )
 
 from app.services.tasks_service import (
@@ -17,6 +18,7 @@ from app.services.tasks_service import (
     task_update_status,
     task_update_description,
     tasks_get_stats,
+    task_analyze,
 )
 
 
@@ -46,6 +48,18 @@ def get_task_id(task_id: int):
             detail='task not found',
         )
     return task
+
+
+@router.post("/{task_id}/analyze", response_model=TaskAnalysisOut)
+def analyze_task_route(task_id: int):
+    analysis = task_analyze(task_id)
+    
+    if analysis is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='task not found',
+        )
+    return analysis
 
 
 @router.post("", response_model=TaskOut, status_code=status.HTTP_201_CREATED)

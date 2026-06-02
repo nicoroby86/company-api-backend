@@ -66,6 +66,14 @@ source/patch_description.json
 
 # local practice
 z_practice/
+practice_dal/
+practice_services/
+practice_routers/
+practice_config.py
+practice_db.py
+practice_schema.py
+.env_practice
+
 
 # local SQL scratch / notes
 create_tables.md
